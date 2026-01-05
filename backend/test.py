@@ -4,9 +4,10 @@ from crawl4ai import *
 async def main():
     async with AsyncWebCrawler() as crawler:
         result = await crawler.arun(
-            url="https://vietnamnet.vn/phat-hien-khuc-tram-toc-bong-tu-nhien-tien-ty-o-ha-tinh-2478632.html",
+            url="https://www.python.org/",
         )
-        print(result.markdown)
+        for item in result:
+            print(item.markdown)
 
 if __name__ == "__main__":
     asyncio.run(main())
