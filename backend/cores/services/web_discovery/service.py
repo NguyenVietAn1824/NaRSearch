@@ -157,7 +157,6 @@ class WebDiscovery:
                 ) for url in urls
             ]
             per_url_lists = await asyncio.gather(*tasks)
-            # Flatten list[list[CrawlResult]] -> list[CrawlResult]
             final_results: list[CrawlResult] = [
                 item for sublist in per_url_lists for item in sublist
             ]
