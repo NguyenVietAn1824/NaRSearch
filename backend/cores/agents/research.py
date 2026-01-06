@@ -12,16 +12,24 @@ async def web_search(query: str, num_results: int = 5) -> list:
     search_results = await web_discovery.search(query=query, num_results=num_results)
     return search_results
 
-agent_toolsets = FunctionToolset(tools=[web_fetch, web_search]) 
+sub_agent_toolsets = FunctionToolset(tools=[web_fetch, web_search]) 
 
 sub_agent_model = ''
 
 sub_agent = Agent(
     sub_agent_model,
-    toolsets=agent_toolsets,
+    toolsets=sub_agent_toolsets,
     output_type = str,
     name = "Research Sub-Agent",
     retries = 3
 )
 
+lead_agent_model = ''
+lead_agent = Agent(
+    lead_agent_model,
+    toolsets=sub_agent_toolsets,
+    output_type = str,
+    name = "Research Lead-Agent",
+    retries = 3
+)
 

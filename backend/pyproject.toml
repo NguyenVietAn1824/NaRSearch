@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "aiohttp>=3.13.3",
     "base",
     "crawl4ai>=0.7.8",
     "loguru>=0.7.3",
