@@ -1,0 +1,2 @@
+web_discovery:
+  brave_search_url: "https://api.search.brave.com/res/v1/web/search"

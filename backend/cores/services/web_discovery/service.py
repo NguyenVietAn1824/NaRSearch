@@ -14,7 +14,9 @@ from crawl4ai.deep_crawling import DeepCrawlStrategy
 from loguru import logger
 from time import monotonic
 from aiohttp import ClientSession
+from ...settings import Settings
 
+settings = Settings()
 # Have 2 tools: Crawl and Discover
 class SearchResult(BaseModel):
     id: str
@@ -30,6 +32,7 @@ class CrawlResult(BaseModel):
     description: str
     content: str
     image_url: str
+
 
 class WebDiscovery:
 
@@ -182,21 +185,26 @@ class WebDiscovery:
         
         # Throttle API calls to respect rate limits
         self._n_running += 1
-        brave_search_url = ""
-        brave_api_key = ""
+
+        logger.debug(f"Get api key success: {settings.web_discovery.brave_api_key}")
         try:
             await self._throttle_brave_api()
             async with ClientSession() as session:
                 async with session.get(
-                    brave_search_url,
+                    settings.web_discovery.brave_search_url,
                     headers={
                         "Accept": "application/json",
                         "Accept-Encoding": "gzip",
-                        "x-subscription-token": brave_api_key,
+                        "x-subscription-token": settings.web_discovery.brave_api_key,
                     },
                     params={"q": query, "count": count},
                 ) as response:
                     payload = await response.json()
+                    if payload['status'] == 422:
+                        logger.error(f"Brave API error 422: {payload.get('message')}")
+                        return None
+        except Exception as e:
+            logger.error(f"Error fetching Brave API results: {e}")
         finally:
             self._n_running -= 1
         
