@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: narsearch_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: narsearch
+      POSTGRES_USER: narsearch_user
+      POSTGRES_PASSWORD: narsearch_password
+    ports:
+      - "5433:5432"  # Using port 5433 to avoid conflict with local PostgreSQL
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U narsearch_user -d narsearch"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API (optional - uncomment to run backend in Docker)
+  # backend:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   container_name: narsearch_backend
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     DATABASE_URL: postgresql://narsearch_user:narsearch_password@db:5432/narsearch
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   volumes:
+  #     - ./backend:/app
+
+volumes:
+  postgres_data:
+    driver: local

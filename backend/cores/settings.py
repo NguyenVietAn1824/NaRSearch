@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
 from dotenv import find_dotenv
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings
@@ -19,7 +18,7 @@ class Settings(BaseSettings):
 
     class Config:
         env_nested_delimiter = '__'
-        yaml_file = Path(__file__).parent / 'settings.yaml'
+        yaml_file = 'settings.yaml'
 
     @classmethod
     def settings_customise_sources(
