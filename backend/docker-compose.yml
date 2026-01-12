@@ -20,23 +20,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Backend API (optional - uncomment to run backend in Docker)
-  # backend:
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile
-  #   container_name: narsearch_backend
-  #   restart: unless-stopped
-  #   ports:
-  #     - "8000:8000"
-  #   environment:
-  #     DATABASE_URL: postgresql://narsearch_user:narsearch_password@db:5432/narsearch
-  #   depends_on:
-  #     db:
-  #       condition: service_healthy
-  #   volumes:
-  #     - ./backend:/app
-
 volumes:
   postgres_data:
     driver: local

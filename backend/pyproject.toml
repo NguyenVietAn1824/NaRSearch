@@ -9,9 +9,11 @@ dependencies = [
     "alembic>=1.18.0",
     "base",
     "crawl4ai>=0.7.8",
+    "google-genai>=1.56.0",
     "loguru>=0.7.3",
     "psycopg2>=2.9.11",
     "pydantic-ai>=1.39.1",
+    "pytest>=9.0.2",
     "sqlalchemy>=2.0.45",
     "sqlmodel>=0.0.31",
 ]
