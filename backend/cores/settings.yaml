@@ -3,13 +3,9 @@ web_discovery:
   brave_api_key: ""
 
 model:
-  lead_agent_model_name: "gemini-1.5-flash"
-  subagent_model_name: "gemini-1.5-flash"
-  lead_thinking_budget: 8096
-  subagent_thinking_budget: 2048
-  include_thoughts: false
+  lead_agent_model_name: "gemini-2.5-flash"
+  subagent_model_name: "gemini-2.5-flash"
 
 gemini:
-  api_key: ""
   flash_rpm: 15
   pro_rpm: 10

@@ -9,7 +9,7 @@ from cores.services.rate_limit import (
     run_with_quota_and_retry,
     wait_llm_retry,
 )
-from cores.settings import settings
+from ..settings import settings
 
 
 def _resolve_provider_and_model(model_name: str) -> tuple[str, str]:

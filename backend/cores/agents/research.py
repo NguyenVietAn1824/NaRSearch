@@ -13,7 +13,7 @@ async def web_fetch(urls: list[str]) -> list:
 
 async def web_search(query: str, num_results: int = 5) -> list:
     web_discovery = WebDiscovery()
-    search_results = await web_discovery.search(query=query, num_results=num_results)
+    search_results = await web_discovery.discover_web_pages(query=query, count=num_results)
     return search_results
 
 web_search_toolset = FunctionToolset(tools=[web_search])
@@ -68,7 +68,7 @@ async def run_test_agent(query: str, max_attempts: int = 3) -> str:
         lambda: test_agent.run(query),
         max_attempts=max_attempts,
     )
-    return res.data
+    return res
 
 
 async def run_test_agent_with_context(
@@ -96,5 +96,5 @@ async def run_test_agent_with_context(
         ),
         max_attempts=max_attempts,
     )
-    return res.data
+    return res.output
 
