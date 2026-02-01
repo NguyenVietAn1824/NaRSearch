@@ -14,7 +14,6 @@ from tenacity import (
     wait_exponential,
 )
 
-
 class RateLimiterRegistry:
     """Global registry for rate limiters keyed by provider:model:rpm."""
     
@@ -50,11 +49,16 @@ class SlidingWindowRateLimiter:
         while True:
             async with self._lock:
                 now = monotonic()
+
+                ## if self._events < self.max_requests -> add queue
+                ## if self._events[0] < now - self.per_seconds -> remove from queue
+                ## It ensure that in any given time frame, we don't exceed the max_requests limit
                 while self._events and self._events[0] < now - self.per_seconds:
                     self._events.popleft()
                 if len(self._events) < self.max_requests:
                     self._events.append(now)
                     return
+                
             await asyncio.sleep(self._events[0] - now + self.per_seconds)
 
 class RateLimit:
@@ -107,7 +111,7 @@ async def run_with_quota_and_retry(
         wait=wait_fn,
         stop=stop_after_attempt(max_attempts),
         reraise=True,
-    )
+    ) ## This is the retry controller, It auto retries failed requests
 
     async for attempt in controller:
         with attempt:

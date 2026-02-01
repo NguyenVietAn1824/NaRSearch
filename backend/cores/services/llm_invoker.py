@@ -30,12 +30,6 @@ def _resolve_provider_and_model(model_name: str) -> tuple[str, str]:
     m = model_name.lower()
     if "gemini" in m or "bison" in m or "gecko" in m:
         return "google", model_name
-    elif "gpt" in m or "davinci" in m:
-        return "openai", model_name
-    elif "claude" in m:
-        return "anthropic", model_name
-    else:
-        return "unknown", model_name
 
 def _resolve_rpm(provider: str, model: str) -> int:
     """Return requests-per-minute policy per provider/model.

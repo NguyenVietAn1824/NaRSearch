@@ -15,6 +15,8 @@ from loguru import logger
 from time import monotonic
 from aiohttp import ClientSession
 from ...settings import settings
+
+
 # Have 2 tools: Crawl and Discover
 class SearchResult(BaseModel):
     id: str
@@ -44,9 +46,9 @@ class WebDiscovery:
         if not cls._instance:
             instance = super().__new__(cls)
             instance._api_lock = asyncio.Lock() # In block of api_lock, just one request can be processed
-            instance._n_running = 0
-            instance._last_brave_call_ts = 0.0
-            instance._initialized = False
+            instance._n_running = 0 ## Number of currently running API requests
+            instance._last_brave_call_ts = 0.0 ## Use for throttling API requests (Max req per second)
+            instance._initialized = False ## This line is important for ensuring singleton behavior
             cls._instance = instance
         return cls._instance
 
@@ -172,7 +174,28 @@ class WebDiscovery:
 
 
             return final_results
-    
+        
+    # Placeholder: Simulate API call and response
+
+    async def discover_web_pages(self, query: str, count: int = 5) -> list[SearchResult]:
+        """Discover web pages relevant to the query using Brave Search API."""
+
+        results = await self._fetch_link_results(query, count)
+        
+        url_list = [r.url for r in results]
+
+        crawled = await self.crawl(url_list)
+        
+        # Create a mapping from URL to crawled content
+        crawled_map = {c.url: c for c in crawled}
+
+        for r in results:
+            crawl_data = crawled_map.get(r.url)
+            if crawl_data:
+                r.content = crawl_data.content
+                r.image_url = crawl_data.image_url or r.image_url
+        
+        return results
 
     async def _fetch_link_results(self, query:str, count: int = 5) -> list[SearchResult]:
         """Discover web pages relevant to the query using Brave Search API.
@@ -231,7 +254,6 @@ class WebDiscovery:
         logger.info(f"Successfully parsed {len(parsed_results)}/{len(web_results)} results")
         return parsed_results
     
-        # Placeholder: Simulate API call and response
     async def _throttle_brave_api(self) -> None:
         """Ensure at most one Brave API request per second.
 
@@ -243,29 +265,8 @@ class WebDiscovery:
             min_interval_seconds = 1.1
             elapsed = now - self._last_brave_call_ts
             if elapsed < min_interval_seconds:
-                wait_s = min_interval_seconds - elapsed
+                wait_s = min_interval_seconds - elapsed  ## = min_interval_seconds + self._last_brave_call_ts - now
                 logger.debug("Brave API throttling: wait {:.2f}s", wait_s)
-                await asyncio.sleep(wait_s)
+                await asyncio.sleep(max(0, wait_s))
             # Update after any required wait to mark the time of this call
             self._last_brave_call_ts = monotonic()
-
-    async def discover_web_pages(self, query: str, count: int = 5) -> list[SearchResult]:
-        """Discover web pages relevant to the query using Brave Search API."""
-
-        results = await self._fetch_link_results(query, count)
-        
-        url_list = [r.url for r in results]
-
-        crawled = await self.crawl(url_list)
-        
-        # Create a mapping from URL to crawled content
-        crawled_map = {c.url: c for c in crawled}
-
-        for r in results:
-            crawl_data = crawled_map.get(r.url)
-            if crawl_data:
-                r.content = crawl_data.content
-                r.image_url = crawl_data.image_url or r.image_url
-        
-        return results
-
