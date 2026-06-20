@@ -1,3 +1,17 @@
+# Environment / secrets
 .env
 
-.pyc
+# Python bytecode & caches
+*.pyc
+*.pyo
+__pycache__/
+.pytest_cache/
+
+# Virtual environment
+.venv/
+
+# Logfire credentials / local data
+.logfire/
+
+# SpecStory history
+.specstory/
